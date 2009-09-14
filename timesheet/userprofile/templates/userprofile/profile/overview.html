@@ -1,0 +1,58 @@
+{% extends "userprofile/base_2col.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Overview of your profile" %}{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block extrajs %}
+  <script type="text/javascript">
+  </script>
+{% endblock %}
+
+{% block userprofile_navigation %}
+{% include "userprofile/menu.html" %}
+{% endblock %}
+
+{% block userprofile_content %}
+	{% load avatars %}
+	<form action="" method="post">
+	<fieldset>
+		<legend>{% trans "Overview of your profile" %}</legend>
+		<div id="avatar" class="{{ css_classes.overview_avatar }} center">
+			<a href="{% url profile_edit_avatar %}">
+				<img class="border" src="{% avatar 96 %}" />
+			</a>
+			<p><a href="{% url profile_edit_avatar %}">{% if user.get_profile.has_avatar %}{% trans "Change avatar" %}{% else %}{% trans "Add avatar" %}{% endif %}</a></p>
+		</div>
+	
+		<div class="{{ css_classes.overview_details }}">
+			<p><label for="id_user">{% trans "Username:" %}</label> {{ user }}</p>
+			<p><label for="id_email">{% trans "E-mail:" %}</label>
+				<span class="{% if not email or not validated %}quiet red{% endif %}">
+				{%if not email %}{% trans "Not set yet" %}
+				{% else %}{{ email }}
+				{% if not validated %}{% trans " (Not validated)" %}
+				{% endif %}{% endif %}
+				</span>
+			</p>
+		</div>
+	</fieldset>
+	</form>
+{% endblock %}
+
+{% block userprofile_content_related %}
+	<div class="box">
+		<h3>{% trans "Management:" %}</h3>
+		<a href="{% url password_change %}">{% trans "Change password" %}</a>
+		<br />
+		<a href="{% url email_validation %}">{% if email %}{% trans "Change your e-mail address" %}{% else %}{% trans "Add your e-mail address" %}{% endif %}</a>
+		{% if not validated and email %}<br /><a href="{% url email_validation_reset %}">{% trans "Resend validation e-mail" %}</a>
+		{% endif %}
+		<br />
+		{% if not user.get_profile.location %}
+			<a href="{% url profile_edit_location %}">{% trans "Add location" %}</a>
+		{% else %}
+			<a href="{% url profile_edit_location %}">{% trans "Change location" %}</a>
+		{% endif %}
+	</div>
+{% endblock %}
