@@ -13,9 +13,7 @@ urlpatterns = patterns('',
 
     url(r'^profile/delete/$', delete, name='profile_delete'),
 
-    url(r'^profile/timesheet/$', direct_to_template,
-        {'template': 'userprofile/profile/timesheet.html'},
-        name='profile_timesheet'),
+    url(r'^profile/timesheet/$', timesheet, name='profile_timesheet'),
 
     # Avatars
     url(r'^profile/edit/avatar/delete/$', avatardelete,

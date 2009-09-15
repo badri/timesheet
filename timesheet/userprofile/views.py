@@ -16,6 +16,8 @@ from django.db import models
 from django.contrib.auth.models import User, SiteProfileNotAvailable
 from userprofile.models import EmailValidation, Avatar, UserProfileMediaNotFound, \
                                GoogleDataAPINotFound, S3BackendNotFound
+
+from demo.demoprofile.models import Chunk
 from django.template import RequestContext
 from cStringIO import StringIO
 from django.core.files.base import ContentFile
@@ -30,6 +32,10 @@ import urllib
 import os
 from userprofile import signals
 import copy
+
+import time
+from datetime import datetime, timedelta
+from operator import itemgetter
 
 if hasattr(settings, "AWS_SECRET_ACCESS_KEY"):
     from backends.S3Storage import S3Storage
@@ -65,6 +71,15 @@ GOOGLE_MAPS_API_KEY = hasattr(settings, "GOOGLE_MAPS_API_KEY") and \
                       settings.GOOGLE_MAPS_API_KEY or None
 AVATAR_WEBSEARCH = hasattr(settings, "AVATAR_WEBSEARCH") and \
                    settings.AVATAR_WEBSEARCH or None
+
+def convert_to_hrs_and_mins(secs):
+    hrs = secs/3600
+    mins = 0
+    rem = secs%3600
+    if rem > 60:
+        mins = rem/60
+    return (hrs, mins)
+
 
 if AVATAR_WEBSEARCH:
     try:
@@ -165,15 +180,53 @@ def timesheet(request):
         email = request.user.email
         if email: validated = True
 
-    fields = [{ 
-        'name': f.name, 
-        'verbose_name': f.verbose_name, 
-        'value': getattr(profile, f.name)
-    } for f in Profile._meta.fields if not (f in BaseProfile._meta.fields or f.name=='id')]
+    today = datetime.today()
+    # start_date = datetime.date(today.year, today.month, today.day)
+    start_date = datetime(2009, 05, 31)
+    end_date = start_date + timedelta(hours=24)
+    time_chunks = Chunk.objects.filter(timestamp__range=(start_date, end_date), person=request.user)
+    
+    time_array = []
+    app_dict = {}
+    time_clocked = 0
+    total_time = 0
+
+    for t in time_chunks:        
+        application = t.application.strip()
+        if application:
+            time_clocked+=10
+            app_dict[application] = app_dict.get(application, 0) + 1
+            time_array.append(int(time.mktime(t.timestamp.timetuple()) * 1000))
+        else:
+            time_array.append(None)
+        total_time+=10
+
+    app_dict = sorted(app_dict.items(), key=itemgetter(1))
+    
+    app_bar = []
+
+    for i,v in enumerate(reversed(app_dict)):    
+        pc = float((float(v[1])*float(10)/float(time_clocked))*float(100))
+        if round(pc) > 1:
+            app_element = {}
+            app_element['percent'] = str(round(pc))
+            app_element['appname'] = v[0]
+            app_bar.append(app_element)
+
+    print time_array
+    print app_bar
+
+    effective_hrs, effective_min = convert_to_hrs_and_mins(time_clocked)
+    total_hrs, total_min = convert_to_hrs_and_mins(total_time)
+
+    print effective_hrs, effective_min
+    print total_hrs, total_min
 
     template = "userprofile/profile/timesheet.html"
     data = { 'section': 'timesheet',
-            'email': email, 'validated': validated, 'fields' : fields }
+            'email': email, 'validated': validated, 'time_array' : time_array, 
+             'app_bar' : app_bar, 'effective_hrs': effective_hrs, 'effective_min': effective_min,
+             'total_hrs':total_hrs, 'total_min':total_min}
     signals.context_signal.send(sender=overview, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
 

@@ -5,7 +5,7 @@ import time
 from django.contrib.auth.models import User
 
 
-u = User.objects.filter(username='badri')[0]
+u = User.objects.filter(username='lparthsarathy')[0]
 
 for each_line in open('31May2009-Sun.timesheet').readlines():
     fields = each_line.split('|')
