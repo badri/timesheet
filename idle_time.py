@@ -11,7 +11,7 @@ class XScreenSaverInfo( ctypes.Structure):
               ('idle',        ctypes.c_ulong), # milliseconds
               ('event_mask',  ctypes.c_ulong)] # events
 
-xlib = ctypes.cdll.LoadLibrary( 'libX11.so')
+xlib = ctypes.cdll.LoadLibrary( 'libX11.so.6')
 dpy = xlib.XOpenDisplay( os.environ['DISPLAY'])
 root = xlib.XDefaultRootWindow( dpy)
 xss = ctypes.cdll.LoadLibrary( 'libXss.so.1')

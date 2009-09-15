@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     (r'^accounts/', include('userprofile.urls')),
 
     # restful services
-    (r'^api/', include('demoprofile.api.urls')),
+    (r'^api/', include('demo.api.urls')),
 
 
     # Admin (not really needed)
