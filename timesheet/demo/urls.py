@@ -14,6 +14,10 @@ urlpatterns = patterns('',
     # Profile application
     (r'^accounts/', include('userprofile.urls')),
 
+    # restful services
+    (r'^api/', include('demoprofile.api.urls')),
+
+
     # Admin (not really needed)
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/(.*)', admin.site.root),
