@@ -20,5 +20,8 @@ class Chunk(models.Model):
 	application = models.CharField(max_length=300, blank=True)
 	timestamp = models.DateTimeField()
 	person = models.ForeignKey(User)
+        
+        def __unicode__(self):
+            return u"%s: %s, %s" % (self.person.username, self.application, self.timestamp.strftime("%a, %d %b %Y %H:%M:%S"))
 
 

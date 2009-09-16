@@ -44,26 +44,11 @@
 				</p>
 			</li>
 			<li>
-				<label for="id_url">{% trans "Select an image from a remote URL. Put the URL on the input below and we'll retrieve the image for you" %}:</label>
+				<label for="id_url">{% trans "Select an image from a remote URL. Put the URL on the input below and the image will be retrieved for you" %}:</label>
 				<p>{{ form.url }}
 				<input type="submit" value="{% trans 'Done' %}" />
 				</p>
 			</li>
-			{% if AVATAR_WEBSEARCH %}
-  		<li>
-    		<label for="id_search">{% trans "Search on Picasa Web" %}</label>
-    		<p>
-      		<input type="text" name="keyword" id="id_search" value="{{ keyword }}" />
-      		<input type="submit" value="{% trans "Search" %}"/>
-    		</p>
-
-    		<div class="photos">
-      		{% for thumb,url in images.items %}
-      		<a href="{{ url }}"><img alt="photo{{ forloop.counter }}" src="{{ thumb }}" /></a>
-      		{% endfor %}
-    		</div>
-			</li>
-			{% endif %}
 			</ul>
 			{% if form.errors %}
 			{% for error,desc in form.errors.items %}
