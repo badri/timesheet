@@ -16,7 +16,7 @@ from datetime import datetime
 import subprocess
 import re
 
-USER = 'lparthsarathy'
+USER = 'badri'
 PASSWD = 'z'
 UPLOAD_URL = 'http://127.0.0.1:8000/api/upload.json'
 

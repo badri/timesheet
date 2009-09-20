@@ -4,9 +4,25 @@
 {% block title %}{% trans "Overview of your profile" %}{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
+{% block extracss %}
+	<link rel="stylesheet" href="{{ MEDIA_URL }}userprofile/css/ui.datepicker.css" type="text/css" />
+{% endblock %}
+
 {% block extrajs %}
+  <script type="text/javascript" src="{{ MEDIA_URL }}userprofile/js/ui.datepicker.js"></script>
   <script type="text/javascript">
 $(function () {
+$("#id_timestamp").addClass("hide");
+$("#id_timestamp").before('<div class="calendar"></div>');
+
+	var date = $("#id_timestamp").val().split("-");
+  $("div.calendar").datepicker({ onSelect: updateInline, hideIfNoPrevNext: true, yearRange: "1940:2010", defaultDate: new Date(date[0],date[1] -1, date[2]) });
+
+	function updateInline(dateStr) {
+		var arrdate = dateStr.split("/");
+		$("#id_timestamp").val(arrdate[2] + "-" + arrdate[0] + "-" + arrdate[1]);
+	}
+
     var dx = [
     {% for tick in time_array %}
       {% if tick %}
@@ -65,6 +81,15 @@ var bar_options = {
 {% endblock %}
 
 {% block userprofile_content_related %}
+
+	<form class="personal" action="{{ request.path_info }}" method="post" enctype="multipart/form-data">
+	<fieldset>
+		<legend>{% trans "Select a date to view  the timesheet:" %}</legend>
+		  {{ dateForm.as_p }}
+		<input type="submit" value="{% trans 'Go' %}" />
+	</fieldset>
+	</form>
+
 	<div class="box">
 		<h3>{% trans "Management:" %}</h3>
 		<a href="{% url password_change %}">{% trans "Change password" %}</a>

@@ -28,6 +28,8 @@ urlpatterns = patterns('',
         { 'extra_context': {'section': 'avatar'},
         'template': 'userprofile/avatar/done.html'},
         name='profile_avatar_crop_done'),
+    
+    url(r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 
     # Account utilities
     url(r'^email/validation/$', email_validation, name='email_validation'),

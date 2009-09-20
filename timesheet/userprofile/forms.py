@@ -17,6 +17,9 @@ try:
 except (ImportError, ImproperlyConfigured):
     raise SiteProfileNotAvailable
 
+
+from datetime import datetime
+
 class LocationForm(forms.ModelForm):
     """
     Profile location form
@@ -163,3 +166,9 @@ class ResendEmailValidationForm(forms.Form):
             return email
 
         raise forms.ValidationError(_("That e-mail isn't registered."))
+
+
+class DateForm(forms.Form):
+    timestamp = forms.DateField(initial=datetime.today())
+   
+   

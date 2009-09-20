@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext as _
 from userprofile.forms import AvatarForm, AvatarCropForm, EmailValidationForm, \
                               ProfileForm, RegistrationForm, LocationForm, \
-                              ResendEmailValidationForm, PublicFieldsForm
+                              ResendEmailValidationForm, PublicFieldsForm, DateForm
 from userprofile.models import BaseProfile
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -174,15 +174,24 @@ def timesheet(request):
     """
     profile, created = Profile.objects.get_or_create(user=request.user)
     validated = False
-    try:
-        email = EmailValidation.objects.get(user=request.user).email
-    except EmailValidation.DoesNotExist:
-        email = request.user.email
-        if email: validated = True
-
     today = datetime.today()
-    # start_date = datetime.date(today.year, today.month, today.day)
-    start_date = datetime(2009, 05, 31)
+    start_date = datetime(today.year, today.month, today.day)
+    email = None
+
+    if request.method == "POST":
+        dateForm = DateForm(request.POST)
+        if dateForm.is_valid():
+            print dateForm.cleaned_data['timestamp']
+            start_date = dateForm.cleaned_data['timestamp']
+        try:
+            email = EmailValidation.objects.get(user=request.user).email
+        except EmailValidation.DoesNotExist:
+            email = request.user.email
+            if email: validated = True
+
+    else:
+        dateForm = DateForm()
+
     end_date = start_date + timedelta(hours=24)
     time_chunks = Chunk.objects.filter(timestamp__range=(start_date, end_date), person=request.user)
     
@@ -213,20 +222,20 @@ def timesheet(request):
             app_element['appname'] = v[0]
             app_bar.append(app_element)
 
-    print time_array
-    print app_bar
+#     print time_array
+#     print app_bar
 
     effective_hrs, effective_min = convert_to_hrs_and_mins(time_clocked)
     total_hrs, total_min = convert_to_hrs_and_mins(total_time)
 
-    print effective_hrs, effective_min
-    print total_hrs, total_min
+#     print effective_hrs, effective_min
+#     print total_hrs, total_min
 
     template = "userprofile/profile/timesheet.html"
     data = { 'section': 'timesheet',
             'email': email, 'validated': validated, 'time_array' : time_array, 
              'app_bar' : app_bar, 'effective_hrs': effective_hrs, 'effective_min': effective_min,
-             'total_hrs':total_hrs, 'total_min':total_min}
+             'total_hrs':total_hrs, 'total_min':total_min, 'dateForm': dateForm}
     signals.context_signal.send(sender=overview, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
 
