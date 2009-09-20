@@ -35,9 +35,9 @@ $("#id_timestamp").before('<div class="calendar"></div>');
 
 
 var options = {
-      lines: { show: true, fill: false, fillColor: "rgba(255, 255, 0, 0.4)" , lineWidth:20 },
+      lines: { show: true, fill: false, fillColor: "rgba(255, 255, 0, 0.8)" , lineWidth:20 },
       xaxis: { mode: "time" },
-      yaxis: { from: 1, to: 1 }
+      yaxis: { min: 1, max: 1, ticks:[[0, "zero"], [1, "activity"]] }
   };    
     $.plot($("#placeholder"), [dx], options);
 
@@ -48,9 +48,9 @@ var options = {
  ];
 
 var bar_options = {
-        yaxis: { min: 1, max: 30 , },
+        yaxis: { min: 1, max: 25 , },
         xaxis: { min: 1, max: 15 , ticks: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},
-        bars: { show: true, fill: true, fillColor: "rgb(255, 47, 47)" }
+        bars: { show: true, fill: true, fillColor: "rgba(255, 47, 47, 0.8)" }
 }
     $.plot($("#splitup"), [dxx], bar_options);
 });
