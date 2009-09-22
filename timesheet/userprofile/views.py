@@ -37,6 +37,9 @@ import time
 from datetime import datetime, timedelta
 from operator import itemgetter
 
+from jsonrpc import jsonrpc_method
+
+
 if hasattr(settings, "AWS_SECRET_ACCESS_KEY"):
     from backends.S3Storage import S3Storage
 
@@ -554,3 +557,20 @@ def email_validation_reset(request):
         data = { 'form': form, }
         signals.context_signal.send(sender=email_validation_reset, request=request, context=data)
         return render_to_response(template, data, context_instance=RequestContext(request))
+
+@jsonrpc_method('userprofile.upload', authenticated=True)
+def process_uploaded_data(request, upload):
+    minute = [] 
+    for i in upload.split("\n")[:-1]:
+        minute.append(i)
+    
+    print minute
+
+    for i in minute:
+        print i
+        app_timestamp, app = i.split(":::")
+        print app_timestamp
+        print app
+        chunk = Chunk(application=app.strip(), timestamp=app_timestamp.strip(), person=request.user)
+        chunk.save()
+

@@ -16,9 +16,9 @@ from datetime import datetime
 import subprocess
 import re
 
-USER = 'badri'
-PASSWD = 'z'
-UPLOAD_URL = 'http://127.0.0.1:8000/api/upload.json'
+USER = 'lakshminp'
+PASSWD = 'zaqwer123'
+UPLOAD_URL = 'http://timedefrag.com/api/upload.json'
 
 # globals
 log_file_name = time.strftime("%d%b%Y-%a", time.localtime()) + '.timesheet'        
@@ -81,7 +81,7 @@ def upload_to_server():
     global UPLOAD_URL, USER, PASSWD, PROCESSED_FILE, log_file_name
     print "processed file read:"
     print open(PROCESSED_FILE).read()
-    cmd = 'curl -u %s:%s "%s" -F  "upload=%s"' % (USER, PASSWD, UPLOAD_URL, open(PROCESSED_FILE).read())
+    cmd = 'curl -H "Expect: " -u %s:%s "%s" -F  "upload=%s"' % (USER, PASSWD, UPLOAD_URL, open(PROCESSED_FILE).read())
     print cmd
     exec_cmd = cmd.strip()
     runner = subprocess.Popen(exec_cmd, shell=True, 

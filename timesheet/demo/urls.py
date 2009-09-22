@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 from django.conf import settings
 from userprofile.views import get_profiles
+from jsonrpc import jsonrpc_site
 
 admin.autodiscover()
 
@@ -16,6 +17,9 @@ urlpatterns = patterns('',
 
     # restful services
     (r'^api/', include('demo.api.urls')),
+
+    # json rpc services
+    (r'^json/', jsonrpc_site.dispatch),
 
 
     # Admin (not really needed)
