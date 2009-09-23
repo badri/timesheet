@@ -3,6 +3,9 @@
 import platform
 import ctypes
 import os
+from jsonrpc.proxy import ServiceProxy
+s = ServiceProxy('http://timedefrag.com/json/')
+
 
 if platform.uname()[0] != 'Linux':
     import win32gui
@@ -15,9 +18,9 @@ import logging
 from datetime import datetime
 import subprocess
 import re
-
-USER = 'lakshminp'
-PASSWD = 'zaqwer123'
+creds = open('c:\\opts.txt').read().split(':')
+USER = creds[0]
+PASSWD = creds[1]
 UPLOAD_URL = 'http://timedefrag.com/api/upload.json'
 
 # globals
@@ -81,11 +84,10 @@ def upload_to_server():
     global UPLOAD_URL, USER, PASSWD, PROCESSED_FILE, log_file_name
     print "processed file read:"
     print open(PROCESSED_FILE).read()
-    cmd = 'curl -H "Expect: " -u %s:%s "%s" -F  "upload=%s"' % (USER, PASSWD, UPLOAD_URL, open(PROCESSED_FILE).read())
-    print cmd
-    exec_cmd = cmd.strip()
-    runner = subprocess.Popen(exec_cmd, shell=True, 
-                                   stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    s.userprofile.upload(USER, PASSWD, open('processed_data').read())
+
+def upload_to_server_instantaneously(app, timestamp):
+    s.userprofile.upload(USER, PASSWD, timestamp+" ::: "+app)
 
 def clear_logs():
     global log_file_name
@@ -93,8 +95,8 @@ def clear_logs():
 
 
 def main():
-    global TOTAL_TICKS, ONE_TICK, count, track_uploads, UPLOAD_TIME
-    while True: #forever        
+    global TOTAL_TICKS, ONE_TICK, count, track_uploads, UPLOAD_TIME    
+    while True: #forever
         while count < TOTAL_TICKS:
             f=open(log_file_name, 'a')
             time.sleep(ONE_TICK)
@@ -109,12 +111,7 @@ def main():
                         application = runner.communicate()[0][:-1]
             else:
                 application = win32gui.GetWindowText(win32gui.GetForegroundWindow())
-
-            f.write(timestamp + "|" + application + "\n")
-
-            print "log file:"
-            print open(log_file_name).read()
-
+            f.write(timestamp+"|"+application+"\n")
             count+=ONE_TICK
             track_uploads+=ONE_TICK
             if track_uploads == UPLOAD_TIME:
@@ -122,8 +119,6 @@ def main():
                 upload_to_server()
                 clear_logs()
                 track_uploads = 0
-
- 
 
 if __name__ == "__main__":
     main()
