@@ -207,21 +207,24 @@ def timesheet(request):
         chunk = {}
         application = t.application.strip()
         time_clocked+=10
-        app_dict[application] = app_dict.get(application, 0) + 1
-        chunk['timestamp'] = int(time.mktime(t.timestamp.timetuple()) * 1000)    
-        chunk['score'] = t.score
-        time_array.append(chunk)
+        if application:
+            app_dict[application] = app_dict.get(application, 0) + 1
+            chunk['timestamp'] = int(time.mktime(t.timestamp.timetuple()) * 1000)    
+            chunk['score'] = t.score
+            time_array.append([int(time.mktime(t.timestamp.timetuple()) * 1000), t.score])
         total_time+=10
 
     app_dict = sorted(app_dict.items(), key=itemgetter(1))
     
+    app_pc = []
     app_bar = []
+    print "app_dict" + str(app_dict)
 
     for i,v in enumerate(reversed(app_dict)):    
         pc = float((float(v[1])*float(10)/float(time_clocked))*float(100))
         if round(pc) > 1:
             app_element = {}
-            app_element['percent'] = str(round(pc))
+            app_pc.append([i+1,round(pc)])
             app_element['appname'] = v[0]
             app_bar.append(app_element)
 
@@ -233,10 +236,13 @@ def timesheet(request):
 
 #     print effective_hrs, effective_min
 #     print total_hrs, total_min
+#     print str(app_pc)
+    print str(app_bar)
+#     print str(time_array)
 
     template = "userprofile/profile/timesheet.html"
     data = { 'section': 'timesheet',
-            'email': email, 'validated': validated, 'time_array' : time_array, 
+            'email': email, 'validated': validated, 'time_array' : str(time_array), 'app_pc':str(app_pc),
              'app_bar' : app_bar, 'effective_hrs': effective_hrs, 'effective_min': effective_min,
              'total_hrs':total_hrs, 'total_min':total_min, 'dateForm': dateForm}
     signals.context_signal.send(sender=overview, request=request, context=data)

@@ -23,10 +23,7 @@ $("#id_timestamp").before('<div class="calendar"></div>');
 		$("#id_timestamp").val(arrdate[2] + "-" + arrdate[0] + "-" + arrdate[1]);
 	}
 
-    var data1 = [
-    {% for tick in time_array %}
-        [ {{ tick.timestamp }}, {{ tick.score }} ],
-    {% endfor %}];
+    var data1 = {{ time_array }};
 
 var options1 = {
       xaxis: { mode: "time" },
@@ -34,11 +31,7 @@ var options1 = {
   };    
     $.plot($("#placeholder1"), [data1], options1);
 
-    var dxx = [
-          {% for each_entry in app_bar %}
-           [ {{ forloop.counter }}, {{ each_entry.percent }}],
-          {% endfor %}
- ];
+    var dxx = {{ app_pc }};
 
 var bar_options = {
         yaxis: { min: 1, max: 25 , },
