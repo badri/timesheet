@@ -18,7 +18,7 @@ import logging
 from datetime import datetime
 import subprocess
 import re
-creds = open('c:\\opts.txt').read().split(':')
+creds = ['lakshminp', 'zaqwer123']
 USER = creds[0]
 PASSWD = creds[1]
 UPLOAD_URL = 'http://timedefrag.com/api/upload.json'

@@ -18,6 +18,7 @@ for f in open(sys.argv[1]).readlines():
 pd.close()
 
 from jsonrpc.proxy import ServiceProxy
-s = ServiceProxy('http://localhost:8000/json/')
-s.userprofile.upload('badri', 'z', open('processed_data').read())
+#s = ServiceProxy('http://localhost:8000/json/')
+s = ServiceProxy('http://timedefrag.com/json/')
+s.userprofile.upload('lakshminp', 'zaqwer123', open('processed_data').read())
 

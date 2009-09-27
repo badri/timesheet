@@ -1,0 +1,41 @@
+{% extends "userprofile/base_2col.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Change the productivity score for an application" %}{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block extrajs %}
+  <script type="text/javascript">
+  </script>
+{% endblock %}
+
+{% block userprofile_navigation %}
+{% include "userprofile/menu.html" %}
+{% endblock %}
+
+{% block userprofile_content %}
+	<form class="personal" action="{{ request.path_info }}" method="post" enctype="multipart/form-data">
+	<fieldset>
+		<legend>{% trans "Change the productivity score" %}</legend>
+		{{ form.as_p }}
+	</fieldset>
+  <input type="submit" value="{% trans 'Go' %}" />
+	</form>
+{% endblock %}
+
+{% block userprofile_content_related %}
+	<div class="box">
+		<h3>{% trans "Management:" %}</h3>
+		<a href="{% url password_change %}">{% trans "Change password" %}</a>
+		<br />
+		<a href="{% url email_validation %}">{% if email %}{% trans "Change your e-mail address" %}{% else %}{% trans "Add your e-mail address" %}{% endif %}</a>
+		{% if not validated and email %}<br /><a href="{% url email_validation_reset %}">{% trans "Resend validation e-mail" %}</a>
+		{% endif %}
+		<br />
+		{% if not user.get_profile.location %}
+			<a href="{% url profile_edit_location %}">{% trans "Add location" %}</a>
+		{% else %}
+			<a href="{% url profile_edit_location %}">{% trans "Change location" %}</a>
+		{% endif %}
+	</div>
+{% endblock %}
