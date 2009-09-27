@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext as _
 from userprofile.forms import AvatarForm, AvatarCropForm, EmailValidationForm, \
                               ProfileForm, RegistrationForm, LocationForm, \
-                              ResendEmailValidationForm, PublicFieldsForm, DateForm
+                              ResendEmailValidationForm, PublicFieldsForm, DateForm, ScoreForm
 from userprofile.models import BaseProfile
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +17,7 @@ from django.contrib.auth.models import User, SiteProfileNotAvailable
 from userprofile.models import EmailValidation, Avatar, UserProfileMediaNotFound, \
                                GoogleDataAPINotFound, S3BackendNotFound
 
-from demo.demoprofile.models import Chunk
+from demo.demoprofile.models import Chunk, Preferences
 from django.template import RequestContext
 from cStringIO import StringIO
 from django.core.files.base import ContentFile
@@ -203,14 +203,14 @@ def timesheet(request):
     time_clocked = 0
     total_time = 0
 
-    for t in time_chunks:        
+    for t in time_chunks:
+        chunk = {}
         application = t.application.strip()
-        if application:
-            time_clocked+=10
-            app_dict[application] = app_dict.get(application, 0) + 1
-            time_array.append(int(time.mktime(t.timestamp.timetuple()) * 1000))
-        else:
-            time_array.append(None)
+        time_clocked+=10
+        app_dict[application] = app_dict.get(application, 0) + 1
+        chunk['timestamp'] = int(time.mktime(t.timestamp.timetuple()) * 1000)    
+        chunk['score'] = t.score
+        time_array.append(chunk)
         total_time+=10
 
     app_dict = sorted(app_dict.items(), key=itemgetter(1))
@@ -240,6 +240,26 @@ def timesheet(request):
              'app_bar' : app_bar, 'effective_hrs': effective_hrs, 'effective_min': effective_min,
              'total_hrs':total_hrs, 'total_min':total_min, 'dateForm': dateForm}
     signals.context_signal.send(sender=overview, request=request, context=data)
+    return render_to_response(template, data, context_instance=RequestContext(request))
+
+
+@login_required
+def score(request):
+    'edit productivity score for applications'
+    if request.method == 'POST':
+        form = ScoreForm(request.POST)
+        if form.is_valid():
+            mod_application = form.cleaned_data['application'].strip()
+            new_score = form.cleaned_data['score']
+            preference = Preferences(person=request.user, application=mod_application, score=new_score)
+            preference.save()
+            Chunk.objects.filter(person=request.user).filter(application__contains=mod_application).update(score=new_score)
+            request.user.message_set.create(message=_("Your productivity score has been updated successfully."))
+    else:
+        form = ScoreForm()
+    template = "userprofile/profile/score.html"
+    data = { 'section': 'score','form': form, }
+    signals.context_signal.send(sender=personal, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
 
 
@@ -560,17 +580,25 @@ def email_validation_reset(request):
 
 @jsonrpc_method('userprofile.upload', authenticated=True)
 def process_uploaded_data(request, upload):
-    minute = [] 
     for i in upload.split("\n")[:-1]:
-        minute.append(i)
-    
-    print minute
-
-    for i in minute:
-        print i
         app_timestamp, app = i.split(":::")
-        print app_timestamp
-        print app
-        chunk = Chunk(application=app.strip(), timestamp=app_timestamp.strip(), person=request.user)
+        app = app.strip()
+        app_timestamp = app_timestamp.strip()
+        if not app:
+            chunk = Chunk(application=app, timestamp=app_timestamp, person=request.user, score=-1)
+        else:
+            # apply existing preferences
+            p = Preferences.objects.filter(person=request.user)
+            apps = [x.application for x in p]
+#             print apps
+#             print "main app:" + app
+            app_presentp = [ x for x in apps if x in app]
+            if app_presentp:
+#                 print app
+                pscore = p.get(application=app_presentp[0]).score
+#                 print "score:" + str(pscore)
+            else:
+                pscore = 0
+            chunk = Chunk(application=app, timestamp=app_timestamp, person=request.user, score=pscore)
         chunk.save()
 

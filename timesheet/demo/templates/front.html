@@ -4,6 +4,7 @@
 {% block title %}{% trans "Front page" %}{% endblock %}
 
 {% block content %}
+<!--
 <h2>{% trans "People who have already tried this demo" %}</h2>
 
 {% for profile in profiles %}
@@ -21,6 +22,29 @@
   </div>
 </div>
 {% endfor %}
+-->
+<h3> 
+download the windows client <a href="http://timedefrag.com/site_media/apps/Timedefrag.zip">here</a>.
+<div>how to install:</div>
+<ol>
+<li> unzip the attachment</li>
+<li> create a file in c: called "opts.txt" and give your username and password separated by ":". 
+<div>
+Example:
+
+lakshminp:passwd1
+</div>
+</li>
+<li> run the "timesheet" program. </li>
+</ol>
+
+you're done.
+It uploads data every 1 minute.
+<div>
+constraints:
+does not work if you are offline.
+</div>
+</h3>
 
 {% endblock %}
 

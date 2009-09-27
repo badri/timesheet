@@ -15,6 +15,8 @@ urlpatterns = patterns('',
 
     url(r'^profile/timesheet/$', timesheet, name='profile_timesheet'),
 
+    url(r'^profile/score/$', score, name='profile_score'),
+
     # Avatars
     url(r'^profile/edit/avatar/delete/$', avatardelete,
         name='profile_avatar_delete'),

@@ -19,6 +19,7 @@ except (ImportError, ImproperlyConfigured):
 
 
 from datetime import datetime
+from demo.demoprofile.models import Preferences
 
 class LocationForm(forms.ModelForm):
     """
@@ -171,4 +172,7 @@ class ResendEmailValidationForm(forms.Form):
 class DateForm(forms.Form):
     timestamp = forms.DateField(initial=datetime.today())
    
-   
+class ScoreForm(forms.ModelForm):
+    class Meta:
+        model = Preferences
+        fields = ('application', 'score')

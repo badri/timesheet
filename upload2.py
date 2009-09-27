@@ -2,11 +2,13 @@
 from datetime import datetime
 import subprocess
 import re
+import sys
 
 pd = open('processed_data', 'w')
-
-for f in open('31May2009-Sun.timesheet').readlines()[120:240]:
+print sys.argv[1]
+for f in open(sys.argv[1]).readlines():
     a = f.split('|')
+    print a
     d=datetime.strptime(a[0], "%a, %d %b %Y %H:%M:%S")
     ts = d.strftime("%Y-%m-%d %H:%M:%S")
     app = re.sub('\"', '\\"', a[1])    
@@ -15,10 +17,7 @@ for f in open('31May2009-Sun.timesheet').readlines()[120:240]:
 
 pd.close()
 
-cmd = 'curl -u lparthsarathy:z "http://127.0.0.1:8000/api/upload.json" -F  "upload=%s"' % (open('processed_data').read())
-print cmd
-exec_cmd = cmd.strip()
-runner = subprocess.Popen(exec_cmd, shell=True, 
-                               stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
+from jsonrpc.proxy import ServiceProxy
+s = ServiceProxy('http://localhost:8000/json/')
+s.userprofile.upload('badri', 'z', open('processed_data').read())
 

@@ -23,23 +23,16 @@ $("#id_timestamp").before('<div class="calendar"></div>');
 		$("#id_timestamp").val(arrdate[2] + "-" + arrdate[0] + "-" + arrdate[1]);
 	}
 
-    var dx = [
+    var data1 = [
     {% for tick in time_array %}
-      {% if tick %}
-       [ {{ tick }}, 1],
-      {% else %}
-        null,
-      {% endif %}
-    {% endfor %}
-];
+        [ {{ tick.timestamp }}, {{ tick.score }} ],
+    {% endfor %}];
 
-
-var options = {
-      lines: { show: true, fill: false, fillColor: "rgba(255, 255, 0, 0.8)" , lineWidth:20 },
+var options1 = {
       xaxis: { mode: "time" },
-      yaxis: { min: 1, max: 1, ticks:[[0, "zero"], [1, "activity"]] }
+      yaxis: { min: -2, max: 2 },
   };    
-    $.plot($("#placeholder"), [dx], options);
+    $.plot($("#placeholder1"), [data1], options1);
 
     var dxx = [
           {% for each_entry in app_bar %}
@@ -64,7 +57,7 @@ var bar_options = {
 {% block userprofile_content %}
     <h1>{{ user.username }}</h1>
 
-    <div id="placeholder" style="width:500px;height:150px;"></div>
+    <div id="placeholder1" style="width:500px;height:150px;"></div>
 
     <p>Effective time clocked: <b>{{ effective_hrs }}</b> hours, <b>{{ effective_min }}</b> minutes</p>
     <p>Total time clocked: <b>{{ total_hrs }}</b> hours, <b>{{ total_min }}</b> minutes</p>

@@ -15,13 +15,28 @@ class Profile(BaseProfile):
     url = models.URLField(blank=True)
     about = models.TextField(blank=True)
 
+PRODUCTIVITY =  (
+           (-1, 'unproductive'),
+           (0, 'neutral'),
+           (1, 'productive'),
+)
+
 class Chunk(models.Model):
 	'a time chunk'
 	application = models.CharField(max_length=300, blank=True)
 	timestamp = models.DateTimeField()
 	person = models.ForeignKey(User)
+        score = models.IntegerField(choices=PRODUCTIVITY, blank=True)
         
         def __unicode__(self):
-            return u"%s: %s, %s" % (self.person.username, self.application, self.timestamp.strftime("%a, %d %b %Y %H:%M:%S"))
+            return u"%s: %s, %s, score:%d" % (self.person.username, self.application, self.timestamp.strftime("%a, %d %b %Y %H:%M:%S"), self.score)
 
 
+class Preferences(models.Model):
+    'productivity preferences for various applications'
+    application = models.CharField(max_length=300, primary_key=True)
+    score = models.IntegerField(choices=PRODUCTIVITY)
+    person = models.ForeignKey(User, null=True)
+
+    def __unicode__(self):
+        return u"%s: %s, score: %d" % (self.person.username, self.application, self.score)
