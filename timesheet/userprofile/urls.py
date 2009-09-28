@@ -17,6 +17,8 @@ urlpatterns = patterns('',
 
     url(r'^profile/score/$', score, name='profile_score'),
 
+    url(r'^profile/score/delete/(?P<id>.+)/$', delete_score),
+
     # Avatars
     url(r'^profile/edit/avatar/delete/$', avatardelete,
         name='profile_avatar_delete'),

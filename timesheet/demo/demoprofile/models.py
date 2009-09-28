@@ -38,5 +38,9 @@ class Preferences(models.Model):
     score = models.IntegerField(choices=PRODUCTIVITY)
     person = models.ForeignKey(User, null=True)
 
+    def productivity(self):
+        return [x[1] for x in PRODUCTIVITY if x[0]==self.score][0]
+
     def __unicode__(self):
-        return u"%s: %s, score: %d" % (self.person.username, self.application, self.score)
+        score = self.productivity()
+        return u"%s: %s, score: %s" % (self.person.username, self.application, score)

@@ -263,11 +263,23 @@ def score(request):
             request.user.message_set.create(message=_("Your productivity score has been updated successfully."))
     else:
         form = ScoreForm()
+    preferences = Preferences.objects.all()
     template = "userprofile/profile/score.html"
-    data = { 'section': 'score','form': form, }
+    data = { 'section': 'score','form': form, 'preferences':preferences}
     signals.context_signal.send(sender=personal, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
 
+@login_required
+def delete_score(request, id):
+    'delete a given score'
+    Preferences.objects.get(pk=id).delete()
+    request.user.message_set.create(message=_("Your productivity score entry has been deleted successfully."))
+    form = ScoreForm()
+    preferences = Preferences.objects.all()
+    template = "userprofile/profile/score.html"
+    data = { 'section': 'score','form': form, 'preferences':preferences}
+    signals.context_signal.send(sender=personal, request=request, context=data)
+    return render_to_response(template, data, context_instance=RequestContext(request))
 
 @login_required
 def personal(request):

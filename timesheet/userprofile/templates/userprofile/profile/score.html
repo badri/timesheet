@@ -21,6 +21,15 @@
 	</fieldset>
   <input type="submit" value="{% trans 'Go' %}" />
 	</form>
+
+        <div>
+	  {% for preference in preferences %}
+	      <p> {{ preference.application }} - {{ preference.productivity }} -
+		<a href="/accounts/profile/score/delete/{{ preference.pk }}/">delete</a>
+              </p>
+	  {% endfor %}
+        </div>
+
 {% endblock %}
 
 {% block userprofile_content_related %}
