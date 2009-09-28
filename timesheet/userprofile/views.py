@@ -206,19 +206,19 @@ def timesheet(request):
     for t in time_chunks:
         chunk = {}
         application = t.application.strip()
-        time_clocked+=10
         if application:
             app_dict[application] = app_dict.get(application, 0) + 1
-            chunk['timestamp'] = int(time.mktime(t.timestamp.timetuple()) * 1000)    
-            chunk['score'] = t.score
-            time_array.append([int(time.mktime(t.timestamp.timetuple()) * 1000), t.score])
+            if t.score != -1:
+                time_clocked+=10
+        chunk['timestamp'] = int(time.mktime(t.timestamp.timetuple()) * 1000)    
+        chunk['score'] = t.score
+        time_array.append([int(time.mktime(t.timestamp.timetuple()) * 1000), t.score])
         total_time+=10
 
     app_dict = sorted(app_dict.items(), key=itemgetter(1))
-    
     app_pc = []
     app_bar = []
-    print "app_dict" + str(app_dict)
+    #print "app_dict" + str(app_dict)
 
     for i,v in enumerate(reversed(app_dict)):    
         pc = float((float(v[1])*float(10)/float(time_clocked))*float(100))

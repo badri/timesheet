@@ -21,12 +21,12 @@
 	</fieldset>
   <input type="submit" value="{% trans 'Go' %}" />
 	</form>
-
+       <h2> Preferences: </h2>
         <div>
 	  {% for preference in preferences %}
-	      <p> {{ preference.application }} - {{ preference.productivity }} -
+	      <h3> {{ preference.application }} - {{ preference.productivity }} -
 		<a href="/accounts/profile/score/delete/{{ preference.pk }}/">delete</a>
-              </p>
+              </h3>
 	  {% endfor %}
         </div>
 
